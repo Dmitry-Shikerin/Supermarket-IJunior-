@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Linq;
 
 namespace Супермаркет
 {
@@ -13,26 +14,14 @@ namespace Супермаркет
             int maxMoney = 450;
             int randomMoney = Utils.GetRandomValue(minMoney, maxMoney);
 
-            Queue<Buyer> buyers = new Queue<Buyer>(new List<Buyer>()
+            Queue<Buyer> buyers = new Queue<Buyer>();
+
+            for (int i = 0; i < buyersNumber; i++)
             {
-                
-            
+                buyers.Enqueue(new Buyer(randomMoney));
+            }
 
-            
-
-                new Buyer(randomMoney),
-                new Buyer(randomMoney),
-                new Buyer(randomMoney),
-                new Buyer(randomMoney),
-                new Buyer(randomMoney)
-            );
-
-            //for (int i = 0; i < buyersNumber; i++)
-            //{
-            //    new Buyer(randomMoney);
-            //}
-
-                List<Product> products = new List<Product>()
+            List<Product> products = new List<Product>()
             {
                 new Product("Банан", 25),
                 new Product("Яблоко", 35),
@@ -65,7 +54,6 @@ namespace Супермаркет
         }
     }
 
-
     class Buyer
     {
         private List<Product> _products = new List<Product>();
@@ -77,9 +65,9 @@ namespace Супермаркет
             _money = money;
         }
 
-        public void GetProduct(Product product)
+        public void GetProduct(List<Product> products)
         {
-            _products.Add(product);
+            _products.AddRange(products);
         }
 
         public bool CanPay(int sumAllProduct)
@@ -124,6 +112,11 @@ namespace Супермаркет
 
             _products.RemoveAt(randomProduct);
         }
+
+        public List<Product> GetProducts()
+        {
+            return _products.ToList();
+        }
     }
 
     class Product
@@ -154,7 +147,6 @@ namespace Супермаркет
             _products = products;
         }
 
-
         public void Serve(Buyer buyer)
         {
             List<Product> products = CreateCart();
@@ -166,6 +158,8 @@ namespace Супермаркет
                 cart.DeleteRandomProduct();
             }
 
+            buyer.PayForProducts(cart.CalculateProductsPrice());
+            buyer.GetProduct(cart.GetProducts());
             _money += cart.CalculateProductsPrice();
 
             Console.Write("Куплено: ");
