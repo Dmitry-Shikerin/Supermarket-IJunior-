@@ -8,49 +8,9 @@ namespace Супермаркет
     {
         static void Main(string[] args)
         {
-            int buyersNumber = 6;
+            Supermarket supermarket = new Supermarket();
 
-            int minMoney = 150;
-            int maxMoney = 450;
-            int randomMoney = Utils.GetRandomValue(minMoney, maxMoney);
-
-            Queue<Buyer> buyers = new Queue<Buyer>();
-
-            for (int i = 0; i < buyersNumber; i++)
-            {
-                buyers.Enqueue(new Buyer(randomMoney));
-            }
-
-            List<Product> products = new List<Product>()
-            {
-                new Product("Банан", 25),
-                new Product("Яблоко", 35),
-                new Product("Груша", 27),
-                new Product("Макароны", 68),
-                new Product("Хлеб", 38),
-                new Product("Молоко", 78),
-                new Product("Говядина", 170),
-                new Product("Чипсы", 50),
-                new Product("Пиво", 97),
-                new Product("Хот-Дог", 45)
-            };
-
-            int bayersNumber = 0;
-
-            Supermarket supermarket = new Supermarket(products);
-
-            while (buyers.Count > 0)
-            {
-                Buyer buyer = buyers.Dequeue();
-
-                bayersNumber++;
-
-                Console.WriteLine($"Покупатель {bayersNumber}");
-
-                supermarket.Serve(buyer);
-
-                Console.WriteLine();
-            }
+            supermarket.ServeQueue();
         }
     }
 
@@ -65,21 +25,18 @@ namespace Супермаркет
             _money = money;
         }
 
-        public void GetProduct(List<Product> products)
+        public void BuyProduct(List<Product> products)
         {
-            _products.AddRange(products);
+            foreach (Product product in products)
+            {
+                _money -= product.Price;
+                _products.Add(product);
+            }
         }
 
         public bool CanPay(int sumAllProduct)
         {
             return sumAllProduct <= _money;
-        }
-
-        public int PayForProducts(int sumProducts)
-        {
-            _money -= sumProducts;
-
-            return sumProducts;
         }
     }
 
@@ -142,9 +99,9 @@ namespace Супермаркет
 
         private int _money = 0;
 
-        public Supermarket(List<Product> products)
+        public Supermarket()
         {
-            _products = products;
+            _products = CreateProducts();
         }
 
         public void Serve(Buyer buyer)
@@ -158,8 +115,7 @@ namespace Супермаркет
                 cart.DeleteRandomProduct();
             }
 
-            buyer.PayForProducts(cart.CalculateProductsPrice());
-            buyer.GetProduct(cart.GetProducts());
+            buyer.BuyProduct(cart.GetProducts());
             _money += cart.CalculateProductsPrice();
 
             Console.Write("Куплено: ");
@@ -171,6 +127,63 @@ namespace Супермаркет
 
             Console.WriteLine($"\nСумма покупок {cart.CalculateProductsPrice()}");
             Console.WriteLine($"Выручка магазина {_money}"); ;
+        }
+
+        public void ServeQueue()
+        {
+            int bayersNumber = 0;
+
+            Queue<Buyer> buyers = CreateBuyers();
+
+            while (buyers.Count > 0)
+            {
+                Buyer buyer = buyers.Dequeue();
+
+                bayersNumber++;
+
+                Console.WriteLine($"Покупатель {bayersNumber}");
+
+                Serve(buyer);
+
+                Console.WriteLine();
+            }
+        }
+
+        private Queue<Buyer> CreateBuyers()
+        {
+            int buyersNumber = 6;
+
+            int minMoney = 150;
+            int maxMoney = 450;
+            int randomMoney = Utils.GetRandomValue(minMoney, maxMoney);
+
+            Queue<Buyer> buyers = new Queue<Buyer>();
+
+            for (int i = 0; i < buyersNumber; i++)
+            {
+                buyers.Enqueue(new Buyer(randomMoney));
+            }
+
+            return buyers;
+        }
+
+        private List<Product> CreateProducts()
+        {
+            List<Product> products = new List<Product>()
+            {
+                new Product("Банан", 25),
+                new Product("Яблоко", 35),
+                new Product("Груша", 27),
+                new Product("Макароны", 68),
+                new Product("Хлеб", 38),
+                new Product("Молоко", 78),
+                new Product("Говядина", 170),
+                new Product("Чипсы", 50),
+                new Product("Пиво", 97),
+                new Product("Хот-Дог", 45)
+            };
+
+            return products;
         }
 
         private List<Product> CreateCart()
