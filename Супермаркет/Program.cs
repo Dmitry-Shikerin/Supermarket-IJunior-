@@ -104,7 +104,28 @@ namespace Супермаркет
             _products = CreateProducts();
         }
 
-        public void Serve(Buyer buyer)
+
+        public void ServeQueue()
+        {
+            int bayersNumber = 0;
+
+            Queue<Buyer> buyers = CreateBuyers();
+
+            while (buyers.Count > 0)
+            {
+                Buyer buyer = buyers.Dequeue();
+
+                bayersNumber++;
+
+                Console.WriteLine($"Покупатель {bayersNumber}");
+
+                Serve(buyer);
+
+                Console.WriteLine();
+            }
+        }
+
+        private void Serve(Buyer buyer)
         {
             List<Product> products = CreateCart();
 
@@ -127,26 +148,6 @@ namespace Супермаркет
 
             Console.WriteLine($"\nСумма покупок {cart.CalculateProductsPrice()}");
             Console.WriteLine($"Выручка магазина {_money}"); ;
-        }
-
-        public void ServeQueue()
-        {
-            int bayersNumber = 0;
-
-            Queue<Buyer> buyers = CreateBuyers();
-
-            while (buyers.Count > 0)
-            {
-                Buyer buyer = buyers.Dequeue();
-
-                bayersNumber++;
-
-                Console.WriteLine($"Покупатель {bayersNumber}");
-
-                Serve(buyer);
-
-                Console.WriteLine();
-            }
         }
 
         private Queue<Buyer> CreateBuyers()
