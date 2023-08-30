@@ -16,13 +16,14 @@ namespace Супермаркет
 
     class Buyer
     {
-        private List<Product> _products = new List<Product>();
+        private List<Product> _products;
 
         private int _money;
 
         public Buyer(int money)
         {
             _money = money;
+            _products = new List<Product>();
         }
 
         public void BuyProduct(List<Product> products)
@@ -34,9 +35,9 @@ namespace Супермаркет
             }
         }
 
-        public bool CanPay(int sumAllProduct)
+        public bool CanPay(int price)
         {
-            return sumAllProduct <= _money;
+            return price <= _money;
         }
     }
 
@@ -61,7 +62,7 @@ namespace Супермаркет
             return productsSum;
         }
 
-        public void DeleteRandomProduct()
+        public void RemoveRandomProduct()
         {
             int randomProduct = Utils.GetRandomValue(_products.Count);
 
@@ -133,7 +134,7 @@ namespace Супермаркет
 
             while (buyer.CanPay(cart.CalculateProductsPrice()) == false)
             {
-                cart.DeleteRandomProduct();
+                cart.RemoveRandomProduct();
             }
 
             buyer.BuyProduct(cart.GetProducts());
