@@ -26,18 +26,27 @@ namespace Супермаркет
             _products = new List<Product>();
         }
 
-        public void BuyProduct(List<Product> products)
+        public void BuyProduct(List<Product> products, int price)
         {
-            foreach (Product product in products)
-            {
-                _money -= product.Price;
-                _products.Add(product);
-            }
+            _products.AddRange(products);
+            _money -= price;
         }
 
         public bool CanPay(int price)
         {
             return price <= _money;
+        }
+
+        public int CalculateProductsPrice(List<Product> products)
+        {
+            int productsSum = 0;
+
+            foreach (Product product in products)
+            {
+                productsSum += product.Price;
+            }
+
+            return productsSum;
         }
     }
 
@@ -48,18 +57,6 @@ namespace Супермаркет
         public Cart(List<Product> products)
         {
             _products = products;
-        }
-
-        public int CalculateProductsPrice()
-        {
-            int productsSum = 0;
-
-            foreach (Product product in _products)
-            {
-                productsSum += product.Price;
-            }
-
-            return productsSum;
         }
 
         public void RemoveRandomProduct()
@@ -73,7 +70,7 @@ namespace Супермаркет
 
         public List<Product> GetProducts()
         {
-            return _products.ToList();
+            return new List<Product>(_products);
         }
     }
 
@@ -132,13 +129,14 @@ namespace Супермаркет
 
             Cart cart = new Cart(products);
 
-            while (buyer.CanPay(cart.CalculateProductsPrice()) == false)
+            while (buyer.CanPay(buyer.CalculateProductsPrice(products)) == false)
             {
                 cart.RemoveRandomProduct();
             }
 
-            buyer.BuyProduct(cart.GetProducts());
-            _money += cart.CalculateProductsPrice();
+            int price = buyer.CalculateProductsPrice(products);
+            buyer.BuyProduct(cart.GetProducts(), price);
+            _money += buyer.CalculateProductsPrice(products);
 
             Console.Write("Куплено: ");
 
@@ -147,7 +145,7 @@ namespace Супермаркет
                 Console.Write($"{product.Name} {product.Price},");
             }
 
-            Console.WriteLine($"\nСумма покупок {cart.CalculateProductsPrice()}");
+            Console.WriteLine($"\nСумма покупок {buyer.CalculateProductsPrice(products)}");
             Console.WriteLine($"Выручка магазина {_money}"); ;
         }
 
@@ -207,16 +205,16 @@ namespace Супермаркет
 
     public static class Utils
     {
-        private static Random _random = new Random();
+        private static Random s_random = new Random();
 
         public static int GetRandomValue(int minValue, int maxValue)
         {
-            return _random.Next(minValue, maxValue);
+            return s_random.Next(minValue, maxValue);
         }
 
         public static int GetRandomValue(int maxValue)
         {
-            return _random.Next(maxValue);
+            return s_random.Next(maxValue);
         }
     }
 }
