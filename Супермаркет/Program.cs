@@ -136,7 +136,7 @@ namespace Супермаркет
 
             int price = buyer.CalculateProductsPrice(products);
             buyer.BuyProduct(cart.GetProducts(), price);
-            _money += buyer.CalculateProductsPrice(products);
+            _money += price;
 
             Console.Write("Куплено: ");
 
@@ -145,7 +145,7 @@ namespace Супермаркет
                 Console.Write($"{product.Name} {product.Price},");
             }
 
-            Console.WriteLine($"\nСумма покупок {buyer.CalculateProductsPrice(products)}");
+            Console.WriteLine($"\nСумма покупок {price}");
             Console.WriteLine($"Выручка магазина {_money}"); ;
         }
 
